@@ -63,14 +63,17 @@ def mars_image():
 
     browser.visit(jpl_url)
 
-    time.sleep(2)
+    time.sleep(5)
     # Asking Splinter to Go to Site and Click Button with name full_image
 
     browser.find_by_id("full_image").click()
 
-    browser.links.find_by_partial_text("more info").click()
- 
+    time.sleep(10)
     
+
+    browser.find_link_by_partial_text("more info").click()
+ 
+    time.sleep(10)
     html = browser.html
     # Parse HTML with Beautiful Soup
     soup = BeautifulSoup(html, 'html.parser')
@@ -78,7 +81,7 @@ def mars_image():
     mars_image = soup.find('figure', class_='lede')
     img_url= mars_image.find('a')['href']
  
-    new_url = '/'.join(url.split('/')[:3])
+    new_url = '/'.join(jpl_url.split('/')[:3])
     featured_image_url = f'{new_url}{img_url}'
 
 
@@ -136,9 +139,9 @@ def  mars_fact_table():
         keys.append(mars_table_col_1[num].text)
         values.append(mars_table_col_2[num].text)
   
-  
-    table_df = pd.DataFrame(values,keys),
-    facts_table = table_df.to_html(header=False, index=False)
+    table_df = pd.DataFrame(values,keys)
+    facts_table = table_df.to_html('mars_fact_table.html')
+    
 
     browser.quit()
     time.sleep(5)
