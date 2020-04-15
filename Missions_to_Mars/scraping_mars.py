@@ -73,7 +73,7 @@ def mars_weather(browser):
 
     url = 'http://twitter.com/marswxreport?lang=en'
     browser.visit(url)
-    time.sleep(2)
+    time.sleep(5)
 
     html1 = browser.html
     # Parse HTML with Beautiful Soup
@@ -90,18 +90,12 @@ def mars_weather(browser):
 
 def  mars_fact_table():
 
-    
-
-    url = 'http://space-facts.com/mars/'
-    
-
+    url = 'https://space-facts.com/mars/'
     df = pd.read_html(url)[0]
+     
     df.columns=["Description", "Value"]
     df.set_index("Description", inplace=True)
-    facts_table= df.to_html(classes="table")
-
-
-
+    facts_table = df.to_html(header = True, index = True)
 
     return facts_table
 
@@ -144,14 +138,14 @@ def scrape():
 
     executable_path = {"executable_path": "./chromedriver.exe"}
     browser = Browser("chrome", **executable_path)
-
+    mars_facts = mars_fact_table()
     mars_data ={}
     news_title, news_p = mars_news(browser)
     mars_data['news_title']= news_title
     mars_data['news_p']= news_p
     mars_data['featured_image_url'] = mars_image(browser)
     mars_data['mars_weather'] = mars_weather(browser)
-    mars_data['mars_fact']=mars_fact_table()
+    mars_data['mars_facts']=mars_facts
     mars_data["mars_hemispheres"] = hemisphereImage(browser)
 
     browser.quit()
