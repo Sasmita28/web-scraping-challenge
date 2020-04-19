@@ -6,16 +6,19 @@ import time
 
 # Set Executable Path & Initialize Chrome Browser
 
-executable_path = {"executable_path": "./chromedriver.exe"}
-browser = Browser("chrome", **executable_path)
+def init_browser():
+
+    executable_path = {'executable_path': 'chromedriver.exe'}
+    return Browser('chrome', **executable_path)
 
 
-
-def mars_news(browser):
+def mars_news():
 
     
-    # URL of page to be scraped\n"
+    # URL of page to be scraped"
     url = 'http://mars.nasa.gov/news/'
+
+    browser = init_browser()
     browser.visit(url)
 
     time.sleep(10)
@@ -33,14 +36,17 @@ def mars_news(browser):
 
     news_p = li_element.find("div", class_="article_teaser_body").get_text()
 
+    browser.quit()
     
     return news_title, news_p
 
-def mars_image(browser):
+def mars_image():
 
-   
+    
 
     jpl_url = 'http://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
+
+    browser = init_browser()
 
     browser.visit(jpl_url)
 
@@ -66,12 +72,15 @@ def mars_image(browser):
     new_url = '/'.join(jpl_url.split('/')[:3])
     featured_image_url = f'{new_url}{img_url}'
 
+    browser.quit()
     return featured_image_url
 
 
-def mars_weather(browser):
-
+def mars_weather():
+    
     url = 'http://twitter.com/marswxreport?lang=en'
+
+    browser = init_browser()
     browser.visit(url)
     time.sleep(5)
 
@@ -86,6 +95,7 @@ def mars_weather(browser):
     mars_span= mars_tweet_section.find_all('span')[4].text
     mars_weather=','.join(mars_span.splitlines())
 
+    browser.quit()
     return mars_weather
 
 def  mars_fact_table():
@@ -99,9 +109,13 @@ def  mars_fact_table():
 
     return facts_table
 
-def hemisphereImage(browser):
+def hemisphereImage():
+
+    
 
     url='http://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+
+    browser = init_browser()
     browser.visit(url)
        
     hemisphere_image_urls = []
@@ -112,13 +126,13 @@ def hemisphereImage(browser):
     for item in range(len(links)):
         hemispheres = {}
    
-        # Find link to click\n",
+        # Find link to click",
         browser.find_by_css("a.product-item h3")[item].click()
    
          # Get Hemisphere Title
         hemispheres["title"] = browser.find_by_css("h2.title").text
  
-        # Find Sample Image Anchor Tag & Extract <href>\n",
+        # Find Sample Image Anchor Tag & Extract <href>",
         sample = browser.links.find_by_text("Sample").first
         hemispheres["img_url"] = sample["href"]
     
@@ -128,27 +142,26 @@ def hemisphereImage(browser):
         # Navigate Backwards
         browser.back()
         
-
-
+        
+    browser.quit()
     return hemisphere_image_urls
 
 
 
 def scrape():
 
-    executable_path = {"executable_path": "./chromedriver.exe"}
-    browser = Browser("chrome", **executable_path)
+    
     mars_facts = mars_fact_table()
     mars_data ={}
-    news_title, news_p = mars_news(browser)
+    news_title, news_p = mars_news()
     mars_data['news_title']= news_title
     mars_data['news_p']= news_p
-    mars_data['featured_image_url'] = mars_image(browser)
-    mars_data['mars_weather'] = mars_weather(browser)
+    mars_data['featured_image_url'] = mars_image()
+    mars_data['mars_weather'] = mars_weather()
     mars_data['mars_facts']=mars_facts
-    mars_data["mars_hemispheres"] = hemisphereImage(browser)
+    mars_data["mars_hemispheres"] = hemisphereImage()
 
-    browser.quit()
+   
 
     return mars_data
 
